@@ -1,0 +1,3 @@
+--计划预警或预期定时任务--
+insert into timer_fd_trigger (ID, CRONEXPRESSION, DAY, DAYREPEAT, HOUR, HOURREPEAT, MINUTES, MINUTESREPEAT, MOUTH, MOUTHREPEAT, STYLE, TRIGGERDESC, TRIGGERGROUP, TRIGGERNAME, WEEK, WEEKREPEAT, YEAR, YEARREPEAT, REPEAT, TRIGGERMARKING)
+values ('4028f00655519dd80155530803b60143', '0 0 11 1/1 * ?', '1', null, '11', null, '0', null, '', null, null, '', 'trigger_default_group', '', '', null, '', null, 4, '');

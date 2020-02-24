@@ -1,0 +1,25 @@
+--项目库权限模板菜单--
+insert into T_S_FUNCTION (ID, FUNCTIONIFRAME, FUNCTIONLEVEL, FUNCTIONNAME, FUNCTIONORDER, FUNCTIONURL, PARENTFUNCTIONID, ICONID, FUNCTIONTYPE, FUNCTIONCLS)
+values ('4028f0075599c31d015599e7e9d80000', null, 2, '项目库权限模板', '41', 'projectLibTemplateController.do?goProjectLibTemplate', '4028efec4cdf892b014cdf8fe7fe000b', '4028ef354b5d7bb1014b5d7cfd8c0002', null, '');
+
+--项目库权限模板菜单层级--
+insert into T_S_FUNCTION_RELATE (ID, FUNCTIONID, PARENTFUNCTIONID)
+values ('4028f0075599fcf001559a027ad30001', '4028f0075599c31d015599e7e9d80000', '4028efec4cdf892b014cdf8fe7fe000b');
+
+--项目库权限模板菜单按钮权限--
+insert into t_s_operation (ID, OPERATIONCODE, OPERATIONICON, OPERATIONNAME, STATUS, FUNCTIONID, ICONID)
+values ('4028f00755b37e7c0155b3815a930000', 'projectLibTemplateAdd', '', '新增', null, '4028f0075599c31d015599e7e9d80000', '');
+insert into t_s_operation (ID, OPERATIONCODE, OPERATIONICON, OPERATIONNAME, STATUS, FUNCTIONID, ICONID)
+values ('4028f00755b37e7c0155b38199d50001', 'projectLibTemplateBatchDel', '', '批量删除', null, '4028f0075599c31d015599e7e9d80000', '');
+insert into t_s_operation (ID, OPERATIONCODE, OPERATIONICON, OPERATIONNAME, STATUS, FUNCTIONID, ICONID)
+values ('4028f00755b37e7c0155b381e7960002', 'projectLibTemplateBatchStart', '', '批量启用', null, '4028f0075599c31d015599e7e9d80000', '');
+insert into t_s_operation (ID, OPERATIONCODE, OPERATIONICON, OPERATIONNAME, STATUS, FUNCTIONID, ICONID)
+values ('4028f00755b37e7c0155b38220140003', 'projectLibTemplateBatchStop', '', '批量禁用', null, '4028f0075599c31d015599e7e9d80000', '');
+insert into t_s_operation (ID, OPERATIONCODE, OPERATIONICON, OPERATIONNAME, STATUS, FUNCTIONID, ICONID)
+values ('4028f00755b37e7c0155b382761f0004', 'projectLibTemplateUpdate', '', '修改', null, '4028f0075599c31d015599e7e9d80000', '');
+insert into t_s_operation (ID, OPERATIONCODE, OPERATIONICON, OPERATIONNAME, STATUS, FUNCTIONID, ICONID)
+values ('4028f00755b37e7c0155b382d7be0005', 'projectLibTemplateDelete', '', '删除', null, '4028f0075599c31d015599e7e9d80000', '');
+insert into t_s_operation (ID, OPERATIONCODE, OPERATIONICON, OPERATIONNAME, STATUS, FUNCTIONID, ICONID)
+values ('4028f00755b37e7c0155b3832ffb0006', 'projectLibTemplateStart', '', '启用', null, '4028f0075599c31d015599e7e9d80000', '');
+insert into t_s_operation (ID, OPERATIONCODE, OPERATIONICON, OPERATIONNAME, STATUS, FUNCTIONID, ICONID)
+values ('4028f00755b37e7c0155b383683a0007', 'projectLibTemplateStop', '', '禁用', null, '4028f0075599c31d015599e7e9d80000', '');

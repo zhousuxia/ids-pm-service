@@ -1,0 +1,9 @@
+update pm_object_property_info set ORDERNUMBER='2' where ID='4028f0066d3cc740016d3e28377c0059';
+update pm_object_property_info set ORDERNUMBER='3' where ID='4028f0066d3cc740016d3e28377d005a';
+update pm_object_property_info set ORDERNUMBER='4' where ID='4028f0066d1de316016d1f0688260007';
+update pm_object_property_info set ORDERNUMBER='5' where ID='4028f0066d1de316016d1f0688280008';
+update pm_object_property_info set ORDERNUMBER='6' where ID='4028f0066d1de316016d1f06882c0009';
+update pm_object_property_info set ORDERNUMBER='7' where ID='4028f0066d1de316016d1f06882e000a';
+update pm_object_property_info set ORDERNUMBER='8' where ID='4028f0066d1de316016d1f068831000b';
+update pm_object_property_info set ORDERNUMBER='9' where ID='4028f0066d1de316016d1f068833000c';
+update pm_object_property_info set ORDERNUMBER='10' where ID='4028f0066d1de316016d1f068836000d';

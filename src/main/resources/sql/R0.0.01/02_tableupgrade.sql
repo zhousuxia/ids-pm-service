@@ -1,0 +1,1 @@
+update PM_MENU set URL = 'projLibController.do?goProjLibLayout'||chr(38)||'isIframe=true' where ID = 008;

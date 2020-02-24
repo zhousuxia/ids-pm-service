@@ -1,0 +1,5 @@
+ delete from FDSEARCH_RESULT_SET where SEARCHMAINID = 'a6b3a4b63ac04d0ea1d4c58951218e4b';
+ delete from FDSEARCH_RESULT_SET where SEARCHMAINID = '3e2c459e4f704ae2ab6c8f47450e5001';
+ delete from FDSEARCH_RESULT_SET where SEARCHMAINID = 'e7faa64587b54971b9efa8e08761514f';
+ 
+ delete from dynamic_form_field t where t.DYNAMICFORMID = '4028f007655a84fd01655ae96cc70037';

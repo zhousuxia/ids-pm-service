@@ -1,0 +1,1 @@
+delete from FD_TASK_CONFIG where CONFIGKEY in ('planLaunchedTask','planTodoTask','planFinishedTask');

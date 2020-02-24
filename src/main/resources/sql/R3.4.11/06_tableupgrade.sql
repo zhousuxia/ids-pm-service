@@ -1,0 +1,1 @@
+update T_S_FUNCTION set FUNCTIONURL = 'messageReceiverConfigController.do?messageReceiverConfig'||chr(38)||'isIframe=true'||chr(38)||'afterIframe=true' where ID = '4028f0055552027c0155520be41b0000';

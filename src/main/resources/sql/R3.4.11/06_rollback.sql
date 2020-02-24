@@ -1,0 +1,1 @@
+update T_S_FUNCTION set FUNCTIONURL = 'messageReceiverConfigController.do?messageReceiverConfig' where ID = '4028f0055552027c0155520be41b0000';

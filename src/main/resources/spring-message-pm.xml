@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- 关注专家消息提醒 -->
+	<!-- <aop:config>
+		<aop:aspect id="expertMyFavoriteNotice" ref="expertMyFavoriteMsgListener">
+			<aop:pointcut id="expertMyFavoriteNoticePointCut"
+				expression="execution(* com.glaway.kes.presonal.service.impl.PresonalIndexServiceImpl.expertMyFavoriteNoticeMsg(..))" />
+
+			<aop:after-returning method="doExecute"
+				pointcut-ref="expertMyFavoriteNoticePointCut" returning="returnValue" />
+		</aop:aspect>
+	</aop:config>  -->
+
+	<aop:config>
+		<aop:aspect id="projectStatusChangeNotice" ref="projectStatusChangeNoticeListener">
+			<aop:pointcut id="projectStatusChangeNoticePointCut"
+				expression="execution(* com.glaway.ids.project.projectmanager.service.ProjectServiceI.updateProjectBizCurrent(..))" />
+			<aop:after-returning method="doExecute"
+				pointcut-ref="projectStatusChangeNoticePointCut" returning="returnValue" />
+		</aop:aspect>
+	</aop:config>
+
+	<aop:config>
+		<aop:aspect id="planInvalidMsgNotice" ref="PlanInvalidMsgNoticeListener">
+			<aop:pointcut id="planInvalidMsgNoticePointCut"
+				expression="execution(* com.glaway.ids.message.notice.service.PlanInvalidMsgNoticeI.getAllMessage(..))" />
+			<aop:after-returning method="doExecute"
+				pointcut-ref="planInvalidMsgNoticePointCut" returning="returnValue" />
+		</aop:aspect>
+	</aop:config>
+
+	<aop:config>
+		<aop:aspect id="planFinishMsgNotice" ref="PlanFinishMsgNoticeListener">
+			<aop:pointcut id="planFinishMsgNoticePointCut"
+				expression="execution(* com.glaway.ids.message.notice.service.PlanFinishMsgNoticeI.getAllMessage(..))" />
+			<aop:after-returning method="doExecute"
+				pointcut-ref="planFinishMsgNoticePointCut" returning="returnValue" />
+		</aop:aspect>
+	</aop:config>
+
+	<aop:config>
+		<aop:aspect id="planchangeMsgNotice" ref="PlanChangeMsgNoticeListener">
+			<aop:pointcut id="planChangeMsgNoticePointCut"
+				expression="execution(* com.glaway.ids.message.notice.service.PlanChangeMsgNoticeI.getAllMessage(..))" />
+			<aop:after-returning method="doExecute"
+				pointcut-ref="planChangeMsgNoticePointCut" returning="returnValue" />
+		</aop:aspect>
+	</aop:config>
+
+	<aop:config>
+		<aop:aspect id="planchangeBackMsgNotice" ref="PlanChangeBackMsgNoticeListener">
+			<aop:pointcut id="planChangeBackMsgNoticePointCut"
+				expression="execution(* com.glaway.ids.message.notice.service.PlanChangeBackMsgNoticeI.getAllMessage(..))" />
+			<aop:after-returning method="doExecute"
+				pointcut-ref="planChangeBackMsgNoticePointCut" returning="returnValue" />
+		</aop:aspect>
+	</aop:config>
+
+	<aop:config>
+		<aop:aspect id="planAssignBackMsgNotice" ref="PlanAssignBackMsgNoticeListener">
+			<aop:pointcut id="planAssignBackMsgNoticePointCut"
+				expression="execution(* com.glaway.ids.message.notice.service.PlanAssignBackMsgNoticeI.getAllMessage(..))" />
+			<aop:after-returning method="doExecute"
+				pointcut-ref="planAssignBackMsgNoticePointCut" returning="returnValue" />
+		</aop:aspect>
+	</aop:config>
+
+  	<aop:config>
+	  <aop:aspect id="planWarnAndOverNotice" ref="PlanWarnAndOverNoticeListener">
+		  <aop:pointcut id="planWarnAndOverNoticePointCut"
+			  expression="execution(* com.glaway.ids.project.plan.service.PlanFlowForworkServiceI.getPlanWarnAndOver(..))" />
+		  <aop:after-returning method="doExecute"
+			  pointcut-ref="planWarnAndOverNoticePointCut" returning="returnValue" />
+	  </aop:aspect>
+  	</aop:config>
+
+  	<aop:config>
+	  <aop:aspect id="flowTaskAssignRejectNotice" ref="FlowTaskAssignRejectNoticeListener">
+		  <aop:pointcut id="flowTaskAssignRejectNoticePointCut"
+			  expression="execution(* com.glaway.ids.project.plan.service.PlanServiceI.planAssignBack(..))" />
+		  <aop:after-returning method="doExecute"
+			  pointcut-ref="flowTaskAssignRejectNoticePointCut" returning="returnValue" />
+	  </aop:aspect>
+  	</aop:config>
+
+</beans>

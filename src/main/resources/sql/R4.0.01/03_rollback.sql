@@ -1,0 +1,9 @@
+delete from T_S_FUNCTION where ID='4028ef506cd2741b016cd2ffef9800e4';
+delete from T_S_FUNCTION_RELATE where ID='4028ef506cd2741b016cd2ffefa400e6';
+delete from t_s_operation where ID='4028ef506ce011be016cef9bc3b400b1';
+delete from t_s_operation where ID='4028ef506ce011be016cef9bf0fb00b3';
+delete from t_s_operation where ID='4028ef506ce011be016cef9c191400b5';
+delete from t_s_operation where ID='4028ef506cd2741b016cd5c9e663010a';
+delete from t_s_operation where ID='4028ef506cd2741b016cd5ca305d010c';
+delete from t_s_operation where ID='4028ef506cd2741b016cd5ca9dde010e';
+delete from t_s_operation where ID='4028ef506cd2741b016cd5cae50b0110';
