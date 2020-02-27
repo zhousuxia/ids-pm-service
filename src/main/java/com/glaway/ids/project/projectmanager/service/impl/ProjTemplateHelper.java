@@ -11,10 +11,7 @@
 
 package com.glaway.ids.project.projectmanager.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.glaway.foundation.common.dao.SessionFacade;
 import com.glaway.foundation.common.dto.FdTeamRoleDto;
@@ -147,6 +144,13 @@ public class ProjTemplateHelper {
         if (template != null) {
             Map<String, Object> paraMap = new HashMap<String, Object>();
             List<PlanTemplateDetail> planTemplateDetail = sessionFacade.executeQuery("from PlanTemplateDetail where projectTemplateId=?", new Object[]{templateId});
+            //根据planNum先进行一次排序防止计划顺序错乱
+            Collections.sort(planTemplateDetail, new Comparator<PlanTemplateDetail>() {
+                @Override
+                public int compare(PlanTemplateDetail o1, PlanTemplateDetail o2) {
+                    return o1.getPlanNumber() - o2.getPlanNumber();
+                }
+            });
             saveProjTmplPlan(planTemplateDetail,project,paraMap,userDto,orgId);
             savePreposePlanByProjTemplate(planTemplateDetail, paraMap);
         }
