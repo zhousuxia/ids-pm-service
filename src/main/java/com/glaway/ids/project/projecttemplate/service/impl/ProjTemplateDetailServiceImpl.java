@@ -150,6 +150,8 @@ public class ProjTemplateDetailServiceImpl extends BusinessObjectServiceImpl<Pro
         plan.setRemark(d.getRemark());
         plan.setDeliInfoList(deliverablesInfoList2);
         plan.setInputList(inputs);
+        plan.setTabCbTemplateId(d.getTabCbTemplateId());
+        plan.setTaskNameType(d.getTaskNameType());
         if(!CommonUtil.isEmpty(preposePlan)) {
             plan.setPreposeIds(preposePlan.getPreposePlanId());
         }
