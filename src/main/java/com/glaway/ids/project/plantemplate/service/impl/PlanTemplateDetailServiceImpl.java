@@ -132,6 +132,18 @@ public class PlanTemplateDetailServiceImpl extends BusinessObjectServiceImpl<Pla
         }
         hql.append(" order by t.planNumber");
         return sessionFacade.findByQueryString(hql.toString());
+
+    }
+
+    @Override
+    public List<PlanTemplateDetail> getPlanTemplateDetailListByProjTemplateId(String projTemplateId) {
+        StringBuilder hql = new StringBuilder("");
+        hql.append("from PlanTemplateDetail t");
+        if (StringUtils.isNotEmpty(projTemplateId)) {
+            hql.append(" where t.projectTemplateId = '" + projTemplateId + "'");
+        }
+        hql.append(" order by t.planNumber");
+        return sessionFacade.findByQueryString(hql.toString());
     }
 
     @Override
@@ -422,6 +434,43 @@ public class PlanTemplateDetailServiceImpl extends BusinessObjectServiceImpl<Pla
         Map<String, List<PlanTemplateDetail>> detailIdPreposeMap = new HashMap<String, List<PlanTemplateDetail>>();
         if (!CommonUtil.isEmpty(objArrayList)) {
             List<PlanTemplateDetail> list = getPlanTemplateDetailList(plantemplateId);
+            Map<String, PlanTemplateDetail> detailMap = new HashMap<String, PlanTemplateDetail>();
+            for(PlanTemplateDetail detail : list){
+                detailMap.put(detail.getId(), detail);
+            }
+            for (Map<String, Object> map : objArrayList) {
+                List<PlanTemplateDetail> preposes = new ArrayList<PlanTemplateDetail>();
+                String preposeid = StringUtils.isNotEmpty((String)map.get("preposeid")) ? (String)map.get("preposeid") : "";
+                if(StringUtils.isNotEmpty(preposeid)){
+                    String[] preposeidArr = preposeid.split(",");
+                    for(String pid : preposeidArr){
+                        if(detailMap.get(pid) != null){
+                            preposes.add(detailMap.get(pid));
+                        }
+                    }
+                    if(!CommonUtil.isEmpty(preposes)){
+                        detailIdPreposeMap.put((String)map.get("id"), preposes);
+                    }
+                }
+            }
+        }
+        return detailIdPreposeMap;
+    }
+
+    @Override
+    public Map<String, List<PlanTemplateDetail>> getDetailPreposesByProjTemplateId(String projTemplateId) {
+        StringBuffer hqlBuffer = new StringBuffer();
+        hqlBuffer.append(" select dl.id id, replace(wm_concat(dlp.id), ',', ',') preposeid");
+        hqlBuffer.append(" from pm_plan_template_dl dl");
+        hqlBuffer.append(" join PM_PROJ_TEMPLATE t on t.id = dl.projecttemplateid");
+        hqlBuffer.append(" join PM_PREPOSE_PLAN_TEMPLATE p on dl.id = p.planid");
+        hqlBuffer.append(" join pm_plan_template_dl dlp on dlp.id = p.preposeplanid");
+        hqlBuffer.append(" where t.id = '" + projTemplateId + "'");
+        hqlBuffer.append(" group by dl.id");
+        List<Map<String, Object>> objArrayList = this.sessionFacade.findForJdbc(hqlBuffer.toString());
+        Map<String, List<PlanTemplateDetail>> detailIdPreposeMap = new HashMap<String, List<PlanTemplateDetail>>();
+        if (!CommonUtil.isEmpty(objArrayList)) {
+            List<PlanTemplateDetail> list = getPlanTemplateDetailListByProjTemplateId(projTemplateId);
             Map<String, PlanTemplateDetail> detailMap = new HashMap<String, PlanTemplateDetail>();
             for(PlanTemplateDetail detail : list){
                 detailMap.put(detail.getId(), detail);

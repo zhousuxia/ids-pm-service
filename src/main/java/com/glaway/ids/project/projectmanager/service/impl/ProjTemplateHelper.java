@@ -16,6 +16,7 @@ import java.util.*;
 import com.glaway.foundation.common.dao.SessionFacade;
 import com.glaway.foundation.common.dto.FdTeamRoleDto;
 import com.glaway.foundation.common.dto.TSUserDto;
+import com.glaway.foundation.common.util.UUIDGenerator;
 import com.glaway.foundation.fdk.dev.service.calendar.FeignCalendarService;
 import com.glaway.foundation.fdk.dev.service.threemember.FeignTeamService;
 import com.glaway.ids.project.menu.entity.Project;
@@ -151,14 +152,18 @@ public class ProjTemplateHelper {
                     return o1.getPlanNumber() - o2.getPlanNumber();
                 }
             });
-            saveProjTmplPlan(planTemplateDetail,project,paraMap,userDto,orgId);
+            saveProjTmplPlan(planTemplateDetail,project,paraMap,templateId,userDto,orgId);
             savePreposePlanByProjTemplate(planTemplateDetail, paraMap);
         }
     }
     
-    private void saveProjTmplPlan(List<PlanTemplateDetail> projTemplateDetailList, Project project, Map<String, Object> paraMap,TSUserDto userDto,String orgId) {
+    private void saveProjTmplPlan(List<PlanTemplateDetail> projTemplateDetailList, Project project, Map<String, Object> paraMap,String templateId,TSUserDto userDto,String orgId) {
+        List<Plan> insertPlans = new ArrayList<Plan>();
+        Map<String, Plan> parentPlanMap = new HashMap<String, Plan>();
         for (PlanTemplateDetail detail : projTemplateDetailList) {
             Plan plan = new Plan();
+            String currentPlanId = UUIDGenerator.generate().toString();
+            plan.setId(currentPlanId);
             String[] workTime = detail.getWorkTime().split("[.]");
             Date startProjectTime = (Date)project.getStartProjectTime().clone();
             Date planEndTime = setPlanTime(project.getProjectTimeType(), startProjectTime, workTime[0]);
@@ -232,6 +237,8 @@ public class ProjTemplateHelper {
                 plan.setTaskNameType("评审任务");
             }
             sessionFacade.save(plan);
+            insertPlans.add(plan);
+            parentPlanMap.put(detail.getId(), plan);
             paraMap.put(detail.getId(), plan.getId());
             deliverablesInfoService.saveDeliverableByPlan(detail.getId(),
                 CommonConstants.DELIVERABLE_TYPE_PROJECTTEMPLATE,
@@ -241,6 +248,55 @@ public class ProjTemplateHelper {
                     CommonConstants.DELIVERABLE_TYPE_PLAN, plan,userDto,orgId);
 
         }
+
+        //两次循环获取 <模版计划详情id,该计划后置模版计划集合>
+        Map<String, List<PlanTemplateDetail>> preposeMap = planTemplateDetailService.getDetailPreposesByProjTemplateId(templateId);
+
+        // 修改BUG计划模板导入时候前置计划和后置计划时间不对应
+        for (PlanTemplateDetail detail : projTemplateDetailList) {
+            if (null != preposeMap.get(detail.getId())) {
+
+                PlanTemplateDetail preposeDetail = preposeMap.get(detail.getId()).get(0);
+
+                for (Plan plan : insertPlans) {
+
+                    if (plan.getId().equals(parentPlanMap.get(detail.getId()).getId())) {
+
+                        Date preposePlanEndTime = parentPlanMap.get(preposeDetail.getId()).getPlanEndTime();
+
+                        plan.setPlanStartTime(DateUtil.nextDay(preposePlanEndTime, 1));
+
+                        plan.setPlanEndTime(setPlanTime(project.getProjectTimeType(),
+                                DateUtil.nextDay(preposePlanEndTime, 1), plan.getWorkTime()));
+
+
+                        break;
+                    }
+
+                }
+
+            }else if(null != preposeMap.get(detail.getParentPlanId())){
+                PlanTemplateDetail preposeDetail = preposeMap.get(detail.getParentPlanId()).get(0);
+
+                for (Plan plan : insertPlans) {
+
+                    if (plan.getId().equals(parentPlanMap.get(detail.getId()).getId())) {
+
+                        Date preposePlanEndTime = parentPlanMap.get(preposeDetail.getId()).getPlanEndTime();
+
+                        plan.setPlanStartTime(DateUtil.nextDay(preposePlanEndTime, 1));
+
+                        plan.setPlanEndTime(setPlanTime(project.getProjectTimeType(),
+                                DateUtil.nextDay(preposePlanEndTime, 1), plan.getWorkTime()));
+
+                        break;
+                    }
+
+                }
+            }
+
+        }
+        sessionFacade.batchUpdate(insertPlans);
     }
     
     

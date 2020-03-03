@@ -55,6 +55,14 @@ public interface PlanTemplateDetailServiceI extends BusinessObjectServiceI<PlanT
      */
     List<PlanTemplateDetail> getPlanTemplateDetailList(String planTemplateId);
 
+    /**
+     * 根据项目模版id获取计划模板数据列表
+     * @author zhousuxia
+     * @param projTemplateId 计划模板id
+     * @return
+     */
+    List<PlanTemplateDetail> getPlanTemplateDetailListByProjTemplateId(String projTemplateId);
+
 
     /**
      * 获取计划模板/项目模板数据交付项
@@ -119,6 +127,14 @@ public interface PlanTemplateDetailServiceI extends BusinessObjectServiceI<PlanT
      * @return
      */
     Map<String, List<PlanTemplateDetail>> getDetailPreposes(String plantemplateId);
+
+    /**
+     * 获取计划模板中计划-前置计划的集合
+     * id:preposeList
+     * @param projTemplateId 项目模版id
+     * @return
+     */
+    Map<String, List<PlanTemplateDetail>> getDetailPreposesByProjTemplateId(String projTemplateId);
 
     /**
      * 根据计划ID查找其所有子计划（包括计划本身和所有子孙计划）

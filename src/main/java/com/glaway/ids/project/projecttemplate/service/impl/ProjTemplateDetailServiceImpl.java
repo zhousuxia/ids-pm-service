@@ -145,7 +145,7 @@ public class ProjTemplateDetailServiceImpl extends BusinessObjectServiceImpl<Pro
         plan.setPlanLevel(d.getPlanLevel());
         plan.setPlanNumber(d.getPlanNumber());
         plan.setStoreyNo(d.getStoreyNo());
-        plan.setProjectId(d.getProjectTemplateId());
+        plan.setProjectId(d.getProjectTemplateId());//这里将项目模版id设为计划的项目id,是否合理
         plan.setWorkTime(d.getWorkTime());
         plan.setRemark(d.getRemark());
         plan.setDeliInfoList(deliverablesInfoList2);
