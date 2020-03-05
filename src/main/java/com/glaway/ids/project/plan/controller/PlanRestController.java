@@ -514,13 +514,13 @@ public class PlanRestController extends BaseController {
         ObjectMapper mapper = new ObjectMapper();
         Set<String> mapKeys = mapper.convertValue(map.get("mapKeys"), new TypeReference<Set<String>>(){});
         PlanDto dto = mapper.convertValue(map.get("planDto"), PlanDto.class);
-        List<List<String>> preposePlanIdList = mapper.convertValue(map.get("preposePlanIdList"), new TypeReference<List<List<String>>>(){});
+        Map<String, List<String>> preposePlanIdMap = mapper.convertValue(map.get("preposePlanIdMap"), new TypeReference<Map<String, List<String>>>(){});
         List<List<Map<String, Object>>> taskMapList = mapper.convertValue(map.get("taskList"), new TypeReference<List<List<Map<String, Object>>>>(){});
         Plan plan = new Plan();
         Dto2Entity.copyProperties(dto, plan);
         FeignJson j = new FeignJson();
         try {
-            planService.inputForWork(mapKeys, projectIdForPlan, plan, type, userId, taskMapList, preposePlanIdList);
+            planService.inputForWork(mapKeys, projectIdForPlan, plan, type, userId, taskMapList, preposePlanIdMap);
         } catch (IOException e) {
             j.setSuccess(false);
             j.setMsg("导入失败");

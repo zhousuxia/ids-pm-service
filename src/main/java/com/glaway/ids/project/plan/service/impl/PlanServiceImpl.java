@@ -2927,7 +2927,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
     }
 
     @Override
-    public void inputForWork(Set<String> mapKeys, String projectIdForPlan, Plan plan, String type, String userId,List<List<Map<String, Object>>> taskMapList,List<List<String>> preposePlanIdList)
+    public void inputForWork(Set<String> mapKeys, String projectIdForPlan, Plan plan, String type, String userId,List<List<Map<String, Object>>> taskMapList,Map<String, List<String>> preposePlanIdMap)
             throws IOException {
 
         String taskType = PlanConstants.PLAN_TYPE_TASK;
@@ -3022,10 +3022,10 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
                 mapList = taskMapList.get(count);
             }
 
-            List<String> idList = new ArrayList<>();
-            if (!CollectionUtils.isEmpty(preposePlanIdList.get(count))){
-                idList = preposePlanIdList.get(count);
-            }
+//            List<String> idList = new ArrayList<>();
+//            if (!CollectionUtils.isEmpty(preposePlanIdList.get(count))){
+//                idList = preposePlanIdList.get(count);
+//            }
 
             boolean insertFlag = false;
             // 如果下方导入时，把insertFlag变成true
@@ -3043,14 +3043,14 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
             paraMap.put("user", user);
             paraMap.put("insertFlag", insertFlag);
 
-            savePlanImport(plan, mapList, standardNameMap, paraMap, idList);
+            savePlanImport(plan, mapList, standardNameMap, paraMap, preposePlanIdMap);
             count++;
         }
     }
 
     @Override
     public void savePlanImport(Plan plan, List<Map<String, Object>> mapList,
-                               Map<String, String> standardNameMap, Map<String, Object> paraMap, List<String> idList) {
+                               Map<String, String> standardNameMap, Map<String, Object> paraMap, Map<String, List<String>> preposePlanIdMap) {
 
         boolean insertFlag = (boolean)paraMap.get("insertFlag");
         String taskType = (String)paraMap.get("taskType");
@@ -3381,7 +3381,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
             }
         }
         insertPreposePlans = savePreposePlanTemplateByMpp(mapList,
-                detailIdPlanIdMap, idList);
+                detailIdPlanIdMap, preposePlanIdMap);
 
         for (PreposePlan preposePlan : insertPreposePlans) {
             Plan plan1 = detailIdPlanMap.get(preposePlan.getPlanId());
@@ -3416,14 +3416,14 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
                 insertDeliverablesInfos, insertPreposePlans,new ArrayList<Inputs>());
     }
 
-    public List<PreposePlan> savePreposePlanTemplateByMpp(List<Map<String, Object>> mapList, Map<String, String> paraMap, List<String> idList) {
+    public List<PreposePlan> savePreposePlanTemplateByMpp(List<Map<String, Object>> mapList, Map<String, String> paraMap, Map<String, List<String>> preposePlanIdMap) {
         List<PreposePlan> list = new ArrayList<PreposePlan>();
         for (Map<String, Object> task : mapList) {
             Integer id = (Integer)task.get("id");
             String name = (String)task.get("name");
             if (id != 0 && StringUtils.isNotEmpty(name)
-                    && !CommonUtil.isEmpty(idList)) {
-                for (String preposeId : idList) {
+                    && !CommonUtil.isEmpty(preposePlanIdMap)) {
+                 /*for (String preposeId : idList) {
                     String planId = (String)paraMap.get(id.toString());
                     String preposePlanId = (String)paraMap.get(preposeId);
                     if (StringUtils.isNotEmpty(planId) && StringUtils.isNotEmpty(preposePlanId)) {
@@ -3432,6 +3432,22 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
                         preposePlan.setPlanId(planId);
                         preposePlan.setPreposePlanId(preposePlanId);
                         list.add(preposePlan);
+                    }
+                }*/
+                if (preposePlanIdMap.containsKey(id.toString())) {
+                    List<String> prePlanIds = preposePlanIdMap.get(id.toString());
+                    if (!CommonUtil.isEmpty(prePlanIds)) {
+                        for (String preposeId : prePlanIds) {
+                            String planId = (String)paraMap.get(id.toString());
+                            String preposePlanId = (String)paraMap.get(preposeId);
+                            if (StringUtils.isNotEmpty(planId) && StringUtils.isNotEmpty(preposePlanId)) {
+                                PreposePlan preposePlan = new PreposePlan();
+                                preposePlan.setId(UUIDGenerator.generate().toString());
+                                preposePlan.setPlanId(planId);
+                                preposePlan.setPreposePlanId(preposePlanId);
+                                list.add(preposePlan);
+                            }
+                        }
                     }
                 }
             }

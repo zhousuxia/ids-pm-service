@@ -318,7 +318,7 @@ public interface PlanServiceI extends BusinessObjectServiceI<Plan> {
      * @return
      * @see
      */
-    void inputForWork(Set<String> mapKeys, String projectIdForPlan, Plan plan, String type, String userId,List<List<Map<String, Object>>> taskMapList,List<List<String>> preposePlanIdList)
+    void inputForWork(Set<String> mapKeys, String projectIdForPlan, Plan plan, String type, String userId,List<List<Map<String, Object>>> taskMapList,Map<String, List<String>> preposePlanIdMap)
             throws IOException;
 
     /**
@@ -330,7 +330,7 @@ public interface PlanServiceI extends BusinessObjectServiceI<Plan> {
      * @param paraMap 参数集合
      */
     void savePlanImport(Plan plan, List<Map<String, Object>> mapList,
-                        Map<String, String> standardNameMap, Map<String, Object> paraMap, List<String> idList);
+                        Map<String, String> standardNameMap, Map<String, Object> paraMap, Map<String, List<String>> preposePlanIdMap);
 
     /**
      * Description: <br>

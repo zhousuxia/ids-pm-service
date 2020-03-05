@@ -15,6 +15,7 @@ import com.glaway.foundation.activiti.core.dto.MyTodoTaskDto;
 import com.glaway.foundation.activiti.facade.WorkFlowFacade;
 import com.glaway.foundation.cache.service.RedisService;
 import com.glaway.foundation.common.dto.TSUserDto;
+import com.glaway.foundation.common.entity.GLObject;
 import com.glaway.foundation.common.log.BaseLogFactory;
 import com.glaway.foundation.common.log.SystemLog;
 import com.glaway.foundation.common.util.*;
@@ -2177,6 +2178,15 @@ public class PlanTemplateServiceImpl extends BusinessObjectServiceImpl<PlanTempl
                     nameDeliverablesMap.get(detail.getPlanName()),userDto,orgId);
             if (!CommonUtil.isEmpty(deliverables)) {
                 // deliverablesInsert.addAll(deliverables);
+                //解决数据转换问题
+                List<DeliverablesInfo> infos = new ArrayList<>();
+                deliverables.forEach(p -> {
+                    DeliverablesInfo info = (DeliverablesInfo) p.clone();
+                    info.setPolicy(null);
+                    infos.add(info);
+                    detail.setDeliInfoList(infos);
+                });
+            } else {
                 detail.setDeliInfoList(deliverables);
             }
             // 前置计划
