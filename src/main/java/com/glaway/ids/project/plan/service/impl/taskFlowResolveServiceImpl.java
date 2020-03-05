@@ -1246,14 +1246,16 @@ public class taskFlowResolveServiceImpl extends CommonServiceImpl implements Tas
 //        }
         List<FlowTaskCellConnectVo> cellConnectList = new ArrayList<FlowTaskCellConnectVo>();
         //找出画布中流程图节点的关联最开始节点：
-        for (String cur : cellConnectMap.keySet()) {
+        for (String keyValueEntity : cellConnectVoMap.keySet()) {
+            String [] curEntity = keyValueEntity.split("-");
             boolean curFlag = false;
-            String targetId = cellConnectMap.get(cur);
+            String cur = curEntity[0];
+            String targetId = curEntity[1];
             if(CommonUtil.isEmpty(cellConnectTargetIdMap.get(cur))){
                 curFlag = true;
             }
             if(curFlag){
-                cellConnectList.add(cellConnectVoMap.get(cur+"-"+targetId));
+                cellConnectList.add(cellConnectVoMap.get(keyValueEntity));
             }
         }
 
