@@ -875,7 +875,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
                 e.printStackTrace();
             }
         }else {
-            plan = null; 
+            plan = null;
         }
         return plan;
     }
@@ -3338,7 +3338,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
                 ActivityTypeManage activityTypeManageList =activityTypeNameMap.get(taskNameType);
                 if (!CommonUtil.isEmpty(activityTypeManageList)){
                     detail.setTaskNameType(activityTypeManageList.getId());
-                 //   List<TabCombinationTemplate> list = tabCbTemplateEntityService.findTabCbTemplatesByActivityId(activityTypeManageList.get(0).getId());
+                    //   List<TabCombinationTemplate> list = tabCbTemplateEntityService.findTabCbTemplatesByActivityId(activityTypeManageList.get(0).getId());
                     if(!CommonUtil.isEmpty(activityIdAndTabCbTempMap.get(activityTypeManageList.getId()))){
                         detail.setTabCbTemplateId(activityIdAndTabCbTempMap.get(activityTypeManageList.getId()));
                     }
@@ -3530,7 +3530,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
         String upPlanId = (String)flgMap.get("upPlanId");
         try {
             conn = jdbcTemplate.getDataSource().getConnection();
-           // conn.setAutoCommit(false);
+            // conn.setAutoCommit(false);
             // 当项目下的所有计划为拟制中计划、且选择导入覆盖时
             if (needDelete) {
                 String projectId = (String)flgMap.get("projectId");
@@ -4383,7 +4383,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
         if (StringUtils.isNotEmpty(plan.getAvaliable())) {
             hql = hql + " and l.avaliable = '" + plan.getAvaliable() + "'";
         }
-        hql = hql + " order by l.createTime desc";
+        hql = hql + " order by l.planEndTime,l.createTime desc";
         return hql;
     }
 
@@ -4415,7 +4415,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
             hqlBuffer.append("  and (OU.realName like '%" + userName + "%'");
             hqlBuffer.append("  or OU.userName like '%" + userName + "%')");
         }
-     //   hqlBuffer.append("and PL.bizCurrent <> '" + PlanConstants.PLAN_INVALID + "'");
+        //   hqlBuffer.append("and PL.bizCurrent <> '" + PlanConstants.PLAN_INVALID + "'");
         for (ConditionVO c : conditionList) {
             if (c.getKey().equals("Plan.progressRate")) {
                 if (StringUtils.isNotEmpty(progressRate)) {
@@ -7140,7 +7140,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
             else {
                 message = I18nUtil.getValue("com.glaway.ids.pm.project.plan.getTaskNameTypeSuccess");
                 if (!CommonUtil.isEmpty(activityTypeManageList)) {
-              //      j.setObj(activityTypeManageList.get(0).getId());
+                    //      j.setObj(activityTypeManageList.get(0).getId());
                 }
                 else {
                     /*dictCode = "activeCategory";
@@ -8341,7 +8341,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
             // 给导入计划的计划类别,计划类型设值
             detail.setTaskType((String)paraMap.get("taskClass"));
             detail.setTaskNameType(e.getTaskNameType());
-        //    List<TabCombinationTemplate> tabList = tabCbTemplateEntityService.findTabCbTemplatesByActivityId(e.getTaskNameType());
+            //    List<TabCombinationTemplate> tabList = tabCbTemplateEntityService.findTabCbTemplatesByActivityId(e.getTaskNameType());
             if(!CommonUtil.isEmpty(activityIdAndTabCbTempMap.get(e.getTaskNameType()))){
             }
             detail.setTabCbTemplateId(activityIdAndTabCbTempMap.get(e.getTaskNameType()));
@@ -10069,7 +10069,7 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
             }
             StringBuffer sb = new StringBuffer();
             sb.append(enitingCount+",").append(lauchedCount+",").append(tobereceivedCount+",").append(orderedCount+",")
-                .append(feedbackingCount+",").append(finishCount);
+                    .append(feedbackingCount+",").append(finishCount);
             feignJson.setObj(sb.toString());
             feignJson.setMsg("操作成功");
         }catch (Exception e){
@@ -10392,9 +10392,9 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
                     psForPlan.setObject(23, plan.getParentPlanId());
                     psForPlan.setObject(24, plan.getPlanLevel());
                     psForPlan.setObject(25,
-                        DateUtil.dateToString(plan.getPlanStartTime(), DateUtil.YYYY_MM_DD));
+                            DateUtil.dateToString(plan.getPlanStartTime(), DateUtil.YYYY_MM_DD));
                     psForPlan.setObject(26,
-                        DateUtil.dateToString(plan.getPlanEndTime(), DateUtil.YYYY_MM_DD));
+                            DateUtil.dateToString(plan.getPlanEndTime(), DateUtil.YYYY_MM_DD));
                     psForPlan.setObject(27, plan.getProgressRate());
                     psForPlan.setObject(28, plan.getStoreyNo());
                     psForPlan.setObject(29, plan.getMilestone());
@@ -10405,11 +10405,11 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
                     psForPlan.setObject(34, plan.getTaskType());
                     psForPlan.setObject(35, plan.getCellId());
                     psForPlan.setObject(36,
-                        StringUtils.isEmpty(plan.getRequired()) ? "" : plan.getRequired());
+                            StringUtils.isEmpty(plan.getRequired()) ? "" : plan.getRequired());
                     psForPlan.setObject(37,
-                        StringUtils.isEmpty(plan.getOwner()) ? "" : plan.getOwner());
+                            StringUtils.isEmpty(plan.getOwner()) ? "" : plan.getOwner());
                     psForPlan.setObject(38,
-                        StringUtils.isEmpty(plan.getCreateOrgId()) ? "" : plan.getCreateOrgId());
+                            StringUtils.isEmpty(plan.getCreateOrgId()) ? "" : plan.getCreateOrgId());
                     psForPlan.setObject(39, plan.getTabCbTemplateId());
                     psForPlan.addBatch();
                 }
@@ -10968,14 +10968,14 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
         node.setOpen(true);
         return node;
     }
-    
+
     @Override
     public FeignJson checkisParentChildAllPublish(String id) {
         FeignJson j = new FeignJson();
         String msg = "";
         try {
             if (!CommonUtil.isEmpty(id)) {
-                Plan parentPlan = (Plan)sessionFacade.get(Plan.class, id);                
+                Plan parentPlan = (Plan)sessionFacade.get(Plan.class, id);
                 Boolean flag = false;
                 if(!CommonUtil.isEmpty(parentPlan.getFormId())) {
                     ApprovePlanForm approvePlanForm = new ApprovePlanForm();
@@ -10988,11 +10988,22 @@ public class PlanServiceImpl extends BusinessObjectServiceImpl<Plan> implements 
                             break;
                         }
                     }
-                }  
-                if (flag) {
-                   j.setMsg("此计划经行过父子一起发布，再提交父计划不能单独发布");
                 }
-                j.setSuccess(flag);
+                Boolean endFlag = false;
+                String formId = parentPlan.getFormId();
+                ApprovePlanFormDto approvePlanFormDto = getApprovePlanFormEntity(formId);
+                MyStartedTaskDto myStartedTaskDto = workFlowFacade.getWorkFlowStartedTaskService().getMyStartedTaskByProcInstId(approvePlanFormDto.getProcInstId());
+                if(!CommonUtil.isEmpty(myStartedTaskDto) && !CommonUtil.isEmpty(myStartedTaskDto.getProcType())){
+                    if("rdTaskSubmitProcess".equals(myStartedTaskDto.getProcType())){
+                        endFlag = true;
+                    };
+                }
+                if (flag && endFlag) {
+                    j.setMsg("此计划经行过父子一起发布，再提交父计划不能单独发布");
+                    j.setSuccess(true);
+                }else{
+                    j.setSuccess(false);
+                }
             }
 
         }
