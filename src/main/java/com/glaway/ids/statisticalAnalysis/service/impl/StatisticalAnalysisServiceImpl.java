@@ -230,42 +230,44 @@ public class StatisticalAnalysisServiceImpl extends CommonServiceImpl implements
                 List<Map<String, Object>> objArrayList = sessionFacade.findForJdbc(querySql);
                 if (!CommonUtil.isEmpty(objArrayList)) {
                     for (Map<String, Object> map : objArrayList) {
-                        ProjectBoardVo vo = new ProjectBoardVo();
-                        vo.setPname(StringUtils.isEmpty((String)map.get("pname")) ? "" : map.get(
-                                "pname").toString());
-                        String mname = StringUtils.isEmpty((String)map.get("mname")) ? "" : map.get(
-                                "mname").toString();
-                        vo.setMname(mname);
-                        if (mname.length() > 20) {
-                            vo.setShowName(mname.substring(0, 20) + "...");
-                        }
-                        String[] numArray = map.get("unum").toString().split(",");
-                        int num = Integer.parseInt(numArray[0]);
-                        for (String na : numArray) {
-                            if (Integer.parseInt(na) > num) {
-                                num = Integer.parseInt(na);
+                        if(!CommonUtil.isEmpty(map.get("pname"))){
+                            ProjectBoardVo vo = new ProjectBoardVo();
+                            vo.setPname(StringUtils.isEmpty((String)map.get("pname")) ? "" : map.get(
+                                    "pname").toString());
+                            String mname = StringUtils.isEmpty((String)map.get("mname")) ? "" : map.get(
+                                    "mname").toString();
+                            vo.setMname(mname);
+                            if (mname.length() > 20) {
+                                vo.setShowName(mname.substring(0, 20) + "...");
                             }
-                        }
-                        vo.setUnum(String.valueOf(num) + "人");
-                        vo.setTime(StringUtils.isEmpty((String)map.get("time")) ? "" : map.get(
-                                "time").toString());
-                        vo.setPid(projectId);
-                        vo.setRownum(String.valueOf(i));
-                        //头部颜色信息
-                        String[] colorNumArray = map.get("color").toString().split(",");
-                        int rednum = Integer.parseInt(numArray[0]);
-                        for (String na : colorNumArray) {
-                            if (Integer.parseInt(na) > rednum) {
-                                num = Integer.parseInt(na);
+                            String[] numArray = map.get("unum").toString().split(",");
+                            int num = Integer.parseInt(numArray[0]);
+                            for (String na : numArray) {
+                                if (Integer.parseInt(na) > num) {
+                                    num = Integer.parseInt(na);
+                                }
                             }
+                            vo.setUnum(String.valueOf(num) + "人");
+                            vo.setTime(StringUtils.isEmpty((String)map.get("time")) ? "" : map.get(
+                                    "time").toString());
+                            vo.setPid(projectId);
+                            vo.setRownum(String.valueOf(i));
+                            //头部颜色信息
+                            String[] colorNumArray = map.get("color").toString().split(",");
+                            int rednum = Integer.parseInt(numArray[0]);
+                            for (String na : colorNumArray) {
+                                if (Integer.parseInt(na) > rednum) {
+                                    num = Integer.parseInt(na);
+                                }
+                            }
+                            if(rednum > 0){
+                                vo.setColor("red");
+                            }else{
+                                vo.setColor(color);
+                            }
+                            vo.setPlanlevel(planLevel);
+                            voList.add(vo);
                         }
-                        if(rednum > 0){
-                            vo.setColor("red");
-                        }else{
-                            vo.setColor(color);
-                        }
-                        vo.setPlanlevel(planLevel);
-                        voList.add(vo);
                     }
                 }
             }
