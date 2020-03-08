@@ -526,7 +526,7 @@ public class ProjTemplateRestController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "项目模板计划导入EXCEL",httpMethod = "POST")
+    @ApiOperation(value = "项目模板计划导入EXCEL",httpMethod = "GET")
     @RequestMapping(value = "saveProjectTemplateDetailByExcel")
     public FeignJson saveProjectTemplateDetailByExcel(@RequestBody Map<String,Object> objMap)
     {
@@ -539,8 +539,10 @@ public class ProjTemplateRestController extends BaseController {
             Dto2Entity.copyProperties(projTemplateDto, projTemplate);
             List<PlanTemplateExcelVo> dataTempList = mapper.convertValue(objMap.get("dataTempList"), new TypeReference<List<PlanTemplateExcelVo>>() {
             });
-            Map<String, PlanTemplateExcelVo> excelMap = (Map<String, PlanTemplateExcelVo>) objMap.get("excelMap");
-            Map<String, String> planLevelMap = (Map<String, String>) objMap.get("planLevelMap");
+            Map<String, PlanTemplateExcelVo> excelMap = mapper.convertValue(objMap.get("excelMap"), new TypeReference<Map<String, PlanTemplateExcelVo>>() {
+            });
+            Map<String, String> planLevelMap = mapper.convertValue(objMap.get("planLevelMap"), new TypeReference<Map<String, String>>() {
+            });
             String switchStr = String.valueOf(objMap.get("switchStr"));
             String orgId = String.valueOf(objMap.get("orgId"));
             TSUserDto userDto = mapper.convertValue(objMap.get("curUser"), TSUserDto.class);
