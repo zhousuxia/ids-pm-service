@@ -554,4 +554,18 @@ public class ProjTemplateRestController extends BaseController {
             return j;
         }
     }
+
+    @RequestMapping(value = "getImportDataList")
+    public FeignJson getImportDataList(@RequestBody List<Map<String,Object>> map,@RequestParam(value = "userId",required = false) String userId,@RequestParam(value = "projectTemplateId",required = false) String projectTemplateId,@RequestParam(value = "orgId",required = false) String orgId){
+        FeignJson feignJson = new FeignJson();
+        try {
+            Map<String,Object> returnMap = projTemplateService.doImportPlanTemplateExcel(map,userId,projectTemplateId,orgId);
+            feignJson.setObj(returnMap);
+        } catch (Exception e) {
+            feignJson.setMsg(e.getMessage());
+            feignJson.setSuccess(false);
+            e.printStackTrace();
+        }
+        return feignJson;
+    }
 }

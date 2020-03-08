@@ -1712,7 +1712,8 @@ public class PlanTemplateServiceImpl extends BusinessObjectServiceImpl<PlanTempl
     }
 
 
-    private Map<String,String> checkDataNew(int rowNum, String strForBc, String switchStr, Map<String, String> standardNameMap, Map<String, String> errorMsgMap, Map<String, String> deliveryNameMap, List<String> numList, Map<String, String> planLevelMap) {
+    @Override
+    public Map<String, String> checkDataNew(int rowNum, String strForBc, String switchStr, Map<String, String> standardNameMap, Map<String, String> errorMsgMap, Map<String, String> deliveryNameMap, List<String> numList, Map<String, String> planLevelMap) {
         String[] data = strForBc.split(";");
         if (!CommonUtil.isEmpty(data)) {
             String number = data[0];
@@ -3189,7 +3190,7 @@ public class PlanTemplateServiceImpl extends BusinessObjectServiceImpl<PlanTempl
         }
 
         returnMap.put("res", res);
-        returnMap.put("dataTempList",errorDataTempList);
+        returnMap.put("dataTempList",dataTempList);
         return returnMap;
     }
 }

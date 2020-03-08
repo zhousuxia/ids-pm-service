@@ -6,15 +6,18 @@ import antlr.TokenStreamException;
 import com.alibaba.fastjson.JSON;
 import com.glaway.foundation.activiti.core.dto.MyStartedTaskDto;
 import com.glaway.foundation.activiti.facade.WorkFlowFacade;
+import com.glaway.foundation.businessobject.service.impl.BusinessObjectServiceImpl;
+import com.glaway.foundation.cache.service.RedisService;
+import com.glaway.foundation.common.dao.SessionFacade;
 import com.glaway.foundation.common.dto.FdTeamRoleDto;
 import com.glaway.foundation.common.dto.TSRoleDto;
 import com.glaway.foundation.common.dto.TSUserDto;
 import com.glaway.foundation.common.exception.GWException;
 import com.glaway.foundation.common.fdexception.FdExceptionPolicy;
+import com.glaway.foundation.common.log.BaseLogFactory;
+import com.glaway.foundation.common.log.SystemLog;
 import com.glaway.foundation.common.util.*;
 import com.glaway.foundation.common.vo.ConditionVO;
-import com.glaway.foundation.core.common.extend.hqlsearch.HqlGenerateUtil;
-import com.glaway.foundation.core.common.hibernate.qbc.CriteriaQuery;
 import com.glaway.foundation.core.common.hibernate.qbc.PageList;
 import com.glaway.foundation.fdk.dev.common.FeignJson;
 import com.glaway.foundation.fdk.dev.dto.TaskDto;
@@ -28,7 +31,13 @@ import com.glaway.foundation.fdk.dev.service.threemember.FeignUserService;
 import com.glaway.foundation.system.lifecycle.constant.LifeCycleConstant;
 import com.glaway.foundation.system.lifecycle.entity.LifeCyclePolicy;
 import com.glaway.foundation.system.lifecycle.entity.LifeCycleStatus;
-import com.glaway.foundation.tag.vo.datatable.SortDirection;
+import com.glaway.ids.config.constant.ConfigStateConstants;
+import com.glaway.ids.config.constant.ConfigTypeConstants;
+import com.glaway.ids.config.constant.NameStandardSwitchConstants;
+import com.glaway.ids.config.constant.SwitchConstants;
+import com.glaway.ids.config.entity.BusinessConfig;
+import com.glaway.ids.config.service.ParamSwitchServiceI;
+import com.glaway.ids.config.service.PlanBusinessConfigServiceI;
 import com.glaway.ids.constant.BpmnConstants;
 import com.glaway.ids.constant.CommonConstants;
 import com.glaway.ids.constant.PlanConstants;
@@ -39,20 +48,20 @@ import com.glaway.ids.planGeneral.tabCombinationTemplate.entity.TabCombinationTe
 import com.glaway.ids.planGeneral.tabCombinationTemplate.entityServiceI.impl.TabCbTemplateEntityServiceImpl;
 import com.glaway.ids.project.menu.entity.ProjTemplateMenu;
 import com.glaway.ids.project.menu.entity.Project;
-import com.glaway.ids.project.plan.entity.DeliverablesInfo;
-import com.glaway.ids.project.plan.entity.Inputs;
-import com.glaway.ids.project.plan.entity.Plan;
-import com.glaway.ids.project.plan.entity.PreposePlan;
+import com.glaway.ids.project.plan.dto.NameStandardDto;
+import com.glaway.ids.project.plan.entity.*;
 import com.glaway.ids.project.plan.service.DeliverablesInfoServiceI;
 import com.glaway.ids.project.plan.service.InputsServiceI;
 import com.glaway.ids.project.plan.service.NameStandardFeignService;
-import com.glaway.ids.project.plantemplate.entity.PlanTemplate;
+import com.glaway.ids.project.plan.vo.PlanExcelSaveVo;
 import com.glaway.ids.project.plantemplate.entity.PlanTemplateDetail;
 import com.glaway.ids.project.plantemplate.entity.PreposePlanTemplate;
 import com.glaway.ids.project.plantemplate.service.PlanTemplateServiceI;
 import com.glaway.ids.project.plantemplate.service.PreposePlanTemplateServiceI;
 import com.glaway.ids.project.plantemplate.support.planTemplateDetail.vo.PlanTemplateExcelVo;
+import com.glaway.ids.project.projectmanager.constant.ProjectRoleConstants;
 import com.glaway.ids.project.projectmanager.service.ProjLibServiceI;
+import com.glaway.ids.project.projectmanager.service.ProjRoleServiceI;
 import com.glaway.ids.project.projectmanager.service.ProjectServiceI;
 import com.glaway.ids.project.projecttemplate.dto.ProjTemplateDto;
 import com.glaway.ids.project.projecttemplate.entity.ProjTemplate;
@@ -62,7 +71,6 @@ import com.glaway.ids.project.projecttemplate.service.ProjTemplateDetailServiceI
 import com.glaway.ids.project.projecttemplate.service.ProjTemplateLibServiceI;
 import com.glaway.ids.project.projecttemplate.service.ProjTemplateRoleServiceI;
 import com.glaway.ids.project.projecttemplate.service.ProjTemplateServiceI;
-import com.glaway.ids.project.projectmanager.constant.ProjectRoleConstants;
 import com.glaway.ids.util.CodeUtils;
 import com.glaway.ids.util.CommonInitUtil;
 import com.glaway.ids.util.ProcessUtil;
@@ -75,13 +83,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.glaway.foundation.businessobject.service.impl.BusinessObjectServiceImpl;
-import com.glaway.foundation.cache.service.RedisService;
-import com.glaway.foundation.common.dao.SessionFacade;
-import com.glaway.foundation.common.log.BaseLogFactory;
-import com.glaway.foundation.common.log.SystemLog;
-import com.glaway.ids.project.projectmanager.service.ProjRoleServiceI;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -198,6 +199,12 @@ public class ProjTemplateServiceImpl extends BusinessObjectServiceImpl<ProjTempl
 
     @Autowired
     private ActivityTypeManageEntityServiceI activityTypeManageEntityService;
+
+    @Autowired
+    private ParamSwitchServiceI paramSwitchService;
+
+    @Autowired
+    private PlanBusinessConfigServiceI businessConfigService;
 
 
     /**
@@ -1588,5 +1595,126 @@ public class ProjTemplateServiceImpl extends BusinessObjectServiceImpl<ProjTempl
         String detailStr = JSON.toJSONString(templateDetailList);
         redisService.setToRedis("PROJTMPPLANLIST", projTemplate.getId(), detailStr);
         return projTemplate.getId();
+    }
+
+    @Override
+    public Map<String, Object> doImportPlanTemplateExcel(List<Map<String, Object>> map, String userId, String projectTemplateId, String orgId) {
+        Map<String,Object> returnMap = new HashMap<>();
+        Map<String, String> errorMsgMap = new HashMap<>();
+        List<PlanTemplateExcelVo> dataTempList = new ArrayList<>();
+        List<PlanExcelSaveVo> errorDataTempList = new ArrayList<>();
+        String res = "";
+        TSUserDto userDto = userService.getUserByUserId(userId);
+
+        // 获取当前系统是否启用标准名称库
+        String switchStr= paramSwitchService.getSwitch(SwitchConstants.NAMESTANDARDSWITCH);
+        boolean isStandard = false;
+        if (NameStandardSwitchConstants.USENAMESTANDARDLIB.equals(switchStr)
+                || NameStandardSwitchConstants.FORCEUSENAMESTANDARD
+                .equals(switchStr)
+                || NameStandardSwitchConstants.DELIVERABLEUPATEABLE
+                .equals(switchStr)) {
+            isStandard = true;
+        }
+        Map<String, String> standardNameMap = new HashMap<String, String>();
+        Map<String, String> deliveryNameMap = new HashMap<String, String>();
+        if (isStandard) {
+            NameStandardDto ns = new NameStandardDto();
+            ns.setStopFlag(ConfigStateConstants.START);
+            List<NameStandardDto> list = nameStandardService.searchNameStandardsAccurate(ns);
+            for (NameStandardDto n : list) {
+                standardNameMap.put(n.getName(), n.getActiveCategory());
+            }
+
+            DeliveryStandard ds = new DeliveryStandard();
+            ds.setStopFlag(ConfigStateConstants.START);
+            List<DeliveryStandard> list2 = deliverablesInfoService.searchDeliveryStandardAccurate(ds);
+            for (DeliveryStandard d : list2) {
+                deliveryNameMap.put(d.getName(), d.getName());
+            }
+        }
+        Map<String, String> planLevelMap = new HashMap<String, String>();
+        BusinessConfig businessConfig = new BusinessConfig();
+        businessConfig.setConfigType(ConfigTypeConstants.PLANLEVEL);
+        businessConfig.setStopFlag(ConfigStateConstants.START);
+        businessConfig.setAvaliable("1");
+        List<BusinessConfig> planLevelConfigs = businessConfigService.searchUseableBusinessConfigs(businessConfig);
+        for (BusinessConfig confog : planLevelConfigs) {
+            planLevelMap.put(confog.getName(), confog.getId());
+        }
+        // 用于校验和预设数据的保存
+        Map<String, PlanTemplateExcelVo> excelMap = new HashMap<String, PlanTemplateExcelVo>();
+        Map<String,ActivityTypeManage> activityTypeNameMap = activityTypeManageEntityService.getActivityTypeAndNameMap();
+        // 计划序号集合
+        List<String> numList = new ArrayList<String>();
+        for (Map<String, Object> dataMap : map){
+            int rowNum = dataMap.get("rowNum") == null ? 3 : Integer.parseInt(dataMap.get("rowNum").toString());
+            String number = dataMap.get("number") == null ? "" : dataMap.get("number").toString();
+            String parentNumber = dataMap.get("parentNumber") == null ? "" : dataMap.get("parentNumber").toString();
+            String tnType = dataMap.get("taskNameType") == null ? "" : dataMap.get("taskNameType").toString();
+            ActivityTypeManage activityTypeManages = activityTypeNameMap.get(tnType);
+            String taskNameType = "";
+            if(!CommonUtil.isEmpty(activityTypeManages)){
+                taskNameType = activityTypeManages.getId();
+            }
+            String name = dataMap.get("name") == null ? "" : dataMap.get("name").toString();
+            String worktime = dataMap.get("worktime") == null ? "" : dataMap.get("worktime").toString();
+            String level = dataMap.get("level") == null ? "" : dataMap.get("level").toString();
+            String milestone = dataMap.get("milestone") == null ? "" : dataMap.get("milestone").toString();
+            String preposeNumbers = dataMap.get("preposeNumbers") == null ? "" : dataMap.get("preposeNumbers").toString();
+            String deliverNames = dataMap.get("deliverName") == null ? "" : dataMap.get("deliverName").toString();
+
+            String isNecessary = dataMap.get("isNecessary") == null ? "" : dataMap.get("isNecessary").toString();
+
+            String checkStr = number+";" + name + ";" + taskNameType + ";" + level + ";" + worktime + ";" + milestone + ";" +
+                    deliverNames + ";" + rowNum;
+            /*Map<String,Object> paramMap = new HashMap<>();
+            paramMap.put("rowNum",rowNum);
+            paramMap.put("checkStr",checkStr);
+            paramMap.put("switchStr",switchStr);
+            paramMap.put("standardNameMap",standardNameMap);
+            paramMap.put("errorMsgMap",errorMsgMap);
+            paramMap.put("deliveryNameMap",deliveryNameMap);
+            paramMap.put("numList",numList);
+            paramMap.put("planLevelMap",planLevelMap);*/
+            errorMsgMap = planTemplateService.checkDataNew(rowNum,checkStr,switchStr,standardNameMap,errorMsgMap,deliveryNameMap,numList,planLevelMap);
+            returnMap.put("errorMsgMap", errorMsgMap);
+            PlanTemplateExcelVo vo =  new PlanTemplateExcelVo();
+            //计划ID
+            vo.setId(UUIDGenerator.generate());
+            vo.setPlanNumber(number);
+            vo.setParentNo(parentNumber);
+            vo.setPlanName(name);
+            vo.setTaskNameType(taskNameType);
+            vo.setPlanLevel(level);
+            vo.setWorktime(worktime);
+            vo.setMilestone(milestone);
+            vo.setIsNecessary(isNecessary);
+            vo.setPreposeNos(preposeNumbers);
+            vo.setDeliverablesName(deliverNames);
+            vo.setRowNum(rowNum);
+            dataTempList.add(vo);
+            excelMap.put(number, vo);
+        }
+        // 若模板中的业务数据为空，则提示且不进行导入操作
+        if (CommonUtil.isEmpty(dataTempList)) {
+            throw new GWException(
+                    I18nUtil.getValue("com.glaway.ids.common.importDataIsNull"));
+        } else if (dataTempList.size() < 1) {
+            throw new GWException(
+                    I18nUtil.getValue("com.glaway.ids.pm.project.plan.importExcel.checkLeastOnePlan"));
+        }
+        //父计划,前置计划
+        planTemplateService.checkData2(excelMap,errorMsgMap,numList);
+        if (0 == errorMsgMap.size()) {
+            //计划模板ID
+            ProjTemplate projTemplate = new ProjTemplate();
+            projTemplate.setId(projectTemplateId);
+            res = saveProjectTemplateDetailByExcel(projTemplate,dataTempList,excelMap,planLevelMap,switchStr,userDto,orgId);
+        }
+
+        returnMap.put("res", res);
+        returnMap.put("dataTempList",dataTempList);
+        return returnMap;
     }
 }

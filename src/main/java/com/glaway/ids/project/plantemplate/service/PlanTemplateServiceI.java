@@ -397,4 +397,10 @@ public interface PlanTemplateServiceI extends BusinessObjectServiceI<PlanTemplat
      */
     Map<String,Object> doImportPlanTemplateExcel(List<Map<String,String>> map,String userId,String planTemplateId,String orgId);
 
+    /**
+     * 校验数据
+     * @return
+     */
+    Map<String,String> checkDataNew(int rowNum, String strForBc, String switchStr, Map<String, String> standardNameMap, Map<String, String> errorMsgMap, Map<String, String> deliveryNameMap, List<String> numList, Map<String, String> planLevelMap);
+
 }

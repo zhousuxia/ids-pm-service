@@ -327,4 +327,12 @@ public interface ProjTemplateServiceI extends BusinessObjectServiceI<ProjTemplat
     String saveProjectTemplateDetailByExcel(ProjTemplate projTemplate, List<PlanTemplateExcelVo> dataList,
                                          Map<String, PlanTemplateExcelVo> excelMap, Map<String, String> planLevelMap, String switchStr, TSUserDto userDto, String orgId);
 
+    /**
+     * 项目模板计划excel导入
+     * @param map 计划模板excel信息
+     * @param userId 用户id
+     * @param projectTemplateId 项目模板id
+     * @return
+     */
+    Map<String,Object> doImportPlanTemplateExcel(List<Map<String,Object>> map,String userId,String projectTemplateId,String orgId);
 }
